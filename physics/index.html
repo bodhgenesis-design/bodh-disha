@@ -6250,6 +6250,8 @@ function rvRenderBank(sec,btn){
     m.style.left='auto';
     m.style.right=Math.max(8, window.innerWidth-r.left+10)+'px';
     m.style.bottom=Math.max(4, window.innerHeight-r.bottom-(50-r.height)/2)+'px';
+    var bb=m.querySelector('.mishu-bubble'), nv=document.getElementById('nav');    
+    if(bb && nv && bb.offsetParent){ bb.style.marginBottom='0px'; var ov=bb.getBoundingClientRect().bottom-(nv.getBoundingClientRect().top-10); if(ov>0) bb.style.marginBottom=Math.ceil(ov)+'px'; }
   }
   function glow(){
     var m=el(); if(!m) return;
@@ -6343,9 +6345,7 @@ function _drBetter(){
 #sdots{display:none!important}
 #navct{display:none!important}
 body.cm-open #mishu{display:none!important}
-@media(max-width:520px){#cmBtn .cm-long{display:none}}
-@media(min-width:521px){#cmBtn .cm-short{display:none}}
-#cmBtn{font-family:var(--font-display);font-weight:800;font-size:.95rem;color:var(--ink);background:rgba(255,201,60,.14);border:1.5px solid rgba(255,201,60,.55);border-radius:999px;padding:9px 16px;cursor:pointer;white-space:nowrap}
+#cmBtn{font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--ink);background:rgba(255,201,60,.2);border:1.5px solid rgba(255,201,60,.8);border-radius:999px;padding:9px 16px;cursor:pointer;white-space:nowrap}
 #cmBtn:hover,#cmBtn:focus-visible{background:rgba(255,201,60,.26);outline:none}
 #cmBtn small{display:block;font-size:.7rem;font-weight:600;color:var(--td);margin-top:1px}
 #cmBack{position:fixed;left:16px;top:58px;z-index:10040;display:none;font-family:var(--font-display);font-weight:700;font-size:.92rem;color:#0b1220;background:var(--gold);border:0;border-radius:999px;padding:10px 18px;box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -6356,6 +6356,12 @@ body.cm-open #mishu{display:none!important}
 #cmSheet h2{font-family:var(--font-display);font-size:1.25rem;margin:0 0 2px;color:var(--ink)}
 #cmSheet .cm-sub{color:var(--td);font-size:.9rem;margin-bottom:12px}
 #cmClose{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--ink);font-size:1.1rem;cursor:pointer}
+.cm-home{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-family:inherit;color:var(--ink);background:rgba(255,201,60,.12);border:1.5px solid rgba(255,201,60,.6);border-radius:14px;padding:12px 14px;margin:4px 0 2px;cursor:pointer}
+.cm-home .cm-hi{font-size:1.5rem;line-height:1}
+.cm-home b{display:block;font-size:1.05rem;color:var(--gold)}
+.cm-home span{display:block;color:var(--td);font-size:.82rem;margin-top:2px}
+.cm-home.here{border-color:var(--gold)}
+.cm-home:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .cm-h{font-family:var(--font-display);font-weight:800;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:16px 2px 8px}
 .cm-mod{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);margin-bottom:8px}
 .cm-mod.here{border-color:rgba(255,201,60,.8);background:rgba(255,201,60,.08)}
@@ -6372,7 +6378,7 @@ body.cm-open #mishu{display:none!important}
 .cm-tile.here{border-color:rgba(255,201,60,.8);background:rgba(255,201,60,.08)}
 @media(max-width:520px){.cm-mod{flex-wrap:wrap}.cm-go{width:100%;justify-content:stretch}.cm-go button{flex:1}}
 </style>
-<button id="cmBack" type="button"></button><div id="cmPanel" role="dialog" aria-modal="true" aria-labelledby="cmTitle"><div id="cmSheet"><button id="cmClose" type="button" aria-label="Close the chapter map">✕</button><h2 id="cmTitle">🗺️ Chapter map</h2><div class="cm-sub">Go to any part of the chapter. You can always come back.</div><div id="cmBody"></div></div></div>
+<button id="cmBack" type="button"></button><div id="cmPanel" role="dialog" aria-modal="true" aria-labelledby="cmTitle"><div id="cmSheet"><button id="cmClose" type="button" aria-label="Close the menu">✕</button><h2 id="cmTitle">☰ Menu</h2><div class="cm-sub">Go to any part of the chapter. You can always come back.</div><div id="cmBody"></div></div></div>
 <script> ;(function(){
 var PRACTICE={s4:1,s5:1,s7:1,skaizen:1,steach:1,s2:1,s6:1};
 var REVIEW={srevise:1,s8:1,srecap:1,s9:1};
@@ -6408,6 +6414,9 @@ function build(){
   });
   function tiles(list){return '<div class="cm-grid">'+list.map(function(i){
     return '<button type="button" class="cm-tile'+(i===S.cur?' here':'')+'" data-go="'+i+'">'+esc(STEP_NAMES[i])+(i===S.cur?'<br><small>You are here</small>':'')+'</button>';}).join('')+'</div>';}
+   
+  var home=other.start.indexOf(0); if(home>=0) other.start.splice(home,1);
+  h+='<button type="button" class="cm-home'+(S.cur===0?' here':'')+'" data-go="0"><span class="cm-hi">🏠</span><span><b>Home</b><span>'+(S.cur===0?'You are here · ':'')+'The start of the chapter, with every module</span></span></button>';
   if(typeof CATCHUP_IDEAS!=='undefined') h+=catchupHTML();
   if(other.start.length) h+='<div class="cm-h">Start</div>'+tiles(other.start);
   h+='<div class="cm-h">Modules</div>';
@@ -6457,7 +6466,7 @@ function open(){build(); lastFocus=document.activeElement; $('cmPanel').classLis
 function close(){var p=$('cmPanel'); document.body.classList.remove('cm-open'); if(p&&p.classList.contains('on')){p.classList.remove('on'); if(lastFocus&&lastFocus.focus) try{lastFocus.focus();}catch(e){}}}
 function init(){
   var c=$('navcenter'); if(!c||$('cmBtn')) return;
-  var b=document.createElement('button'); b.id='cmBtn'; b.type='button'; b.innerHTML='🗺️ <span class="cm-long">Chapter map</span><span class="cm-short">Map</span><small id="cmPage"></small>';
+  var b=document.createElement('button'); b.id='cmBtn'; b.type='button'; b.innerHTML='☰ Menu<small id="cmPage"></small>'; b.setAttribute('aria-label','Menu: go to any page');    
   b.onclick=open; c.insertBefore(b,c.firstChild);
   $('cmClose').onclick=close;
   $('cmPanel').onclick=function(e){if(e.target===this) close();};
